@@ -1,0 +1,22 @@
+{
+  "types": {
+    "aliases": "aliases",
+    "tags": "tags",
+    "title": "text",
+    "type": "text",
+    "status": "text",
+    "author": "text",
+    "created": "date",
+    "updated": "date",
+    "summary": "text",
+    "up": "multitext",
+    "repo": "multitext",
+    "period": "text",
+    "due": "date",
+    "source": "text",
+    "medium": "text",
+    "creator": "text",
+    "rating": "number",
+    "relationship": "text"
+  }
+}

@@ -1,0 +1,47 @@
+filters:
+  and:
+    - not:
+        - file.inFolder("00_system/templates")
+    - 'type == "review"'
+properties:
+  file.name:
+    displayName: Title
+  note.medium:
+    displayName: Medium
+  note.creator:
+    displayName: Creator
+  note.status:
+    displayName: Status
+  note.rating:
+    displayName: Rating
+views:
+  - type: table
+    name: Library by medium
+    groupBy:
+      property: note.medium
+      direction: ASC
+    order:
+      - file.name
+      - note.creator
+      - note.status
+      - note.rating
+  - type: table
+    name: Want to read / watch / play
+    filters:
+      and:
+        - 'status == "planned"'
+    groupBy:
+      property: note.medium
+      direction: ASC
+    order:
+      - file.name
+      - note.creator
+  - type: table
+    name: In progress
+    filters:
+      and:
+        - 'status == "active"'
+    order:
+      - file.name
+      - note.medium
+      - note.creator

@@ -1,0 +1,43 @@
+filters:
+  and:
+    - not:
+        - file.inFolder("00_system/templates")
+    - or:
+        - 'type == "project"'
+        - 'type == "idea"'
+properties:
+  file.name:
+    displayName: Project
+  file.folder:
+    displayName: Folder
+  note.type:
+    displayName: Type
+  note.summary:
+    displayName: Summary
+  note.repo:
+    displayName: Repo
+  note.updated:
+    displayName: Updated
+views:
+  - type: table
+    name: By status
+    groupBy:
+      property: note.status
+      direction: ASC
+    order:
+      - file.name
+      - note.type
+      - note.summary
+      - note.repo
+      - file.folder
+      - note.updated
+  - type: table
+    name: Active
+    filters:
+      and:
+        - 'status == "active"'
+    order:
+      - file.name
+      - note.summary
+      - note.repo
+      - note.updated

@@ -1,0 +1,56 @@
+{
+	"schemaVersion": "0.1.0",
+	"name": "Second Brain – Resource",
+	"behavior": "create",
+	"noteNameFormat": "{{title|lower|snake|safe_name|slice:0,60}}",
+	"path": "01_inbox",
+	"noteContentFormat": "# {{title}}\n\n> Source: {{url}}\n\n{{content}}",
+	"properties": [
+		{
+			"name": "title",
+			"value": "{{title}}",
+			"type": "text"
+		},
+		{
+			"name": "type",
+			"value": "resource",
+			"type": "text"
+		},
+		{
+			"name": "status",
+			"value": "unprocessed",
+			"type": "text"
+		},
+		{
+			"name": "author",
+			"value": "human",
+			"type": "text"
+		},
+		{
+			"name": "created",
+			"value": "{{date|date:\"YYYY-MM-DD\"}}",
+			"type": "date"
+		},
+		{
+			"name": "updated",
+			"value": "{{date|date:\"YYYY-MM-DD\"}}",
+			"type": "date"
+		},
+		{
+			"name": "summary",
+			"value": "{{description}}",
+			"type": "text"
+		},
+		{
+			"name": "source",
+			"value": "{{url}}",
+			"type": "text"
+		},
+		{
+			"name": "tags",
+			"value": "clippings",
+			"type": "multitext"
+		}
+	],
+	"triggers": []
+}
