@@ -4,19 +4,25 @@
 #                    fresh copy of the template doesn't fail every morning before Telegram is set up
 #   BRIEF_LANG       en | es                       (default en)
 #   BRIEF_TIMEZONE   IANA name, e.g. Europe/Madrid (default UTC) — used for "today" and deadlines
-#   BRIEF_ARCHIVE    true to also save each brief in 00_system/briefs/ and commit it (one real commit per day)
-#   BRIEF_GIT_NAME / BRIEF_GIT_EMAIL   author of that commit (default: github-actions[bot]);
-#                    use your name and GitHub noreply email if you want it on your contribution graph
+#   BRIEF_ARCHIVE    true to also save each brief in 00_system/briefs/ and commit it (one commit per day)
+#   BRIEF_GIT_NAME / BRIEF_GIT_EMAIL   author of that commit (default: github-actions[bot])
 # Secrets: TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID.
+# The send time is the one place to edit this file: the cron line and its time zone below.
 name: Morning brief
 
 on:
   schedule:
-    - cron: "0 12 * * *"   # cron is always UTC: 12:00 UTC = 7:00 in UTC-5, 13:00 in UTC+1… change it to your morning
+    - cron: "37 6 * * *"   # minute hour day month weekday → 06:37 every day in the time zone below.
+      timezone: "UTC"      # set your IANA zone (same as BRIEF_TIMEZONE) so the cron is your local time,
+                           # daylight saving included. An off-peak minute (not :00) starts more reliably.
   workflow_dispatch:         # manual run from the Actions tab or: gh workflow run morning_brief.yml
 
 permissions:
   contents: write            # only used when BRIEF_ARCHIVE is true
+
+concurrency:
+  group: morning-brief       # a manual run and the scheduled one never commit at the same time
+  cancel-in-progress: false
 
 jobs:
   brief:
@@ -27,7 +33,9 @@ jobs:
       BRIEF_LANG: ${{ vars.BRIEF_LANG || 'en' }}
       BRIEF_TIMEZONE: ${{ vars.BRIEF_TIMEZONE || 'UTC' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0, pinned to a commit
+        with:
+          persist-credentials: false   # the token is only handed to git in the commit step below
 
       - name: Build and send the brief
         run: python3 .github/scripts/morning_brief.py ${{ vars.BRIEF_ARCHIVE == 'true' && '--archive' || '' }}
@@ -38,6 +46,7 @@ jobs:
       - name: Commit the archived brief
         if: always() && vars.BRIEF_ARCHIVE == 'true'   # keeps the daily commit even if Telegram is down
         env:
+          GH_TOKEN: ${{ github.token }}
           GIT_NAME: ${{ vars.BRIEF_GIT_NAME || 'github-actions[bot]' }}
           GIT_EMAIL: ${{ vars.BRIEF_GIT_EMAIL || '41898282+github-actions[bot]@users.noreply.github.com' }}
         run: |
@@ -46,6 +55,7 @@ jobs:
           git add 00_system/briefs
           git diff --cached --quiet && exit 0
           git commit -q -m "brief: $(TZ="$BRIEF_TIMEZONE" date +%F)"
+          gh auth setup-git
           for attempt in 1 2 3; do
             git pull -q --rebase && git push -q && exit 0
             sleep 5

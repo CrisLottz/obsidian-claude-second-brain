@@ -1,6 +1,9 @@
 # ── Obsidian: per-device UI state (rewritten on every click) ──
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
+# Plugin settings can hold API keys or tokens; only the Git plugin's (no secrets) is shared
+.obsidian/plugins/*/data.json
+!.obsidian/plugins/obsidian-git/data.json
 
 # Obsidian local trash (Git history already keeps deleted notes)
 .trash/
@@ -15,6 +18,9 @@ __pycache__/
 *.pyc
 # Third-party Claude wrappers that dump caches into the vault
 **/.claudian/
+# Personal Claude Code files that may hold private context or API keys
+CLAUDE.local.md
+.mcp.json
 
 # ── Large / binary files: keep them outside the vault and link to them ──
 *.pdf
@@ -46,6 +52,16 @@ __pycache__/
 *.p12
 id_rsa*
 id_ed25519*
+*.ppk
+*.kdbx
+*.ovpn
+*.jks
+*.keystore
+.netrc
+.npmrc
+.pypirc
+credentials*.json
+service-account*.json
 
 # ── Temp / editor files ──
 *.tmp
