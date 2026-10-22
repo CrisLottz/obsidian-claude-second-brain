@@ -1,0 +1,50 @@
+# Daily morning brief to Telegram, built from the vault by a plain Python script (no LLM, no API tokens).
+# Setup: README → "Telegram morning brief". Configure it with repository variables, no code changes:
+#   BRIEF_LANG       en | es                       (default en)
+#   BRIEF_TIMEZONE   IANA name, e.g. Europe/Madrid (default UTC) — used for "today" and deadlines
+#   BRIEF_ARCHIVE    true to also save each brief in 00_system/briefs/ and commit it (one real commit per day)
+#   BRIEF_GIT_NAME / BRIEF_GIT_EMAIL   author of that commit (default: github-actions[bot]);
+#                    use your name and GitHub noreply email if you want it on your contribution graph
+# Secrets: TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID.
+name: Morning brief
+
+on:
+  schedule:
+    - cron: "0 12 * * *"   # cron is always UTC: 12:00 UTC = 7:00 in UTC-5, 13:00 in UTC+1… change it to your morning
+  workflow_dispatch:         # manual run from the Actions tab or: gh workflow run morning_brief.yml
+
+permissions:
+  contents: write            # only used when BRIEF_ARCHIVE is true
+
+jobs:
+  brief:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BRIEF_LANG: ${{ vars.BRIEF_LANG || 'en' }}
+      BRIEF_TIMEZONE: ${{ vars.BRIEF_TIMEZONE || 'UTC' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and send the brief
+        run: python3 .github/scripts/morning_brief.py ${{ vars.BRIEF_ARCHIVE == 'true' && '--archive' || '' }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Commit the archived brief
+        if: always() && vars.BRIEF_ARCHIVE == 'true'   # keeps the daily commit even if Telegram is down
+        env:
+          GIT_NAME: ${{ vars.BRIEF_GIT_NAME || 'github-actions[bot]' }}
+          GIT_EMAIL: ${{ vars.BRIEF_GIT_EMAIL || '41898282+github-actions[bot]@users.noreply.github.com' }}
+        run: |
+          git config user.name "$GIT_NAME"
+          git config user.email "$GIT_EMAIL"
+          git add 00_system/briefs
+          git diff --cached --quiet && exit 0
+          git commit -q -m "brief: $(TZ="$BRIEF_TIMEZONE" date +%F)"
+          for attempt in 1 2 3; do
+            git pull -q --rebase && git push -q && exit 0
+            sleep 5
+          done
+          exit 1
