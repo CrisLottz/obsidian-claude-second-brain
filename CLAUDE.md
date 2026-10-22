@@ -4,7 +4,7 @@ This folder is the user's second brain: an Obsidian vault of plain Markdown note
 
 The root note `00_home.md` (the user's profile and the map of every area) and the "Working with me" preferences are loaded by the global instructions in `.claude/global/CLAUDE.md`. If they are not already in your context, this machine lacks the global setup: read `00_home.md` and `.claude/global/CLAUDE.md` first, and suggest running `python .claude/global/install.py`.
 
-> Using another AI agent? Most read `AGENTS.md` (or `GEMINI.md`): copy this file under that name. The notes and conventions are plain Markdown and work with any AI; the hooks and `/skills` are Claude Code features.
+> Using another AI agent? `AGENTS.md` points it to this file and says what to do without the hooks. The notes and conventions are plain Markdown and work with any AI; the hooks and `/skills` are Claude Code features.
 
 ## Start of every session
 
@@ -32,13 +32,13 @@ The root note `00_home.md` (the user's profile and the map of every area) and th
 
 ## Session log
 
-After each task that changed the vault, append one line to `00_system/claude_log_YYYY_MM.md` (current month; create it with `type: log` if missing):
+After each task that changed the vault, append one line to `00_system/claude_log_YYYY_MM.md` (current month; if missing, create it from `00_system/templates/tpl_log.md` with `author: ai` and `up: "[[00_home]]"`):
 
 `- YYYY-MM-DD — what was done, in one sentence — [[note_a]], [[note_b]]`
 
 ## Git
 
-Hooks handle Git: pull at session start, and after each of your responses a commit of the files you touched (message = your latest log line) followed by a push. Don't commit or push yourself unless the user asks. The user's own edits are committed separately by the Obsidian Git plugin.
+Hooks handle Git: pull at session start, and after each of your responses a commit of the notes you touched and of the moves and deletions you staged with `git mv` / `git rm` (message = your latest log line), followed by a push. Don't commit or push yourself unless the user asks. Changes under `.claude/`, `.github/` and `.obsidian/` are never auto-committed: when you edit those, tell the user to review and commit them. The user's own edits are committed separately by the Obsidian Git plugin.
 
 ## Skills
 
@@ -52,5 +52,5 @@ Hooks handle Git: pull at session start, and after each of your responses a comm
 ## Global setup
 
 - `.claude/global/CLAUDE.md` — instructions loaded in every session on this machine (root note, how to use the vault from other projects, "Working with me").
-- `.claude/global/install.py` — run once per machine; links `~/.claude/CLAUDE.md` to the global file, installs the vault hooks globally and links the vault skills, so sessions opened in any project can read, validate and commit vault notes.
+- `.claude/global/install.py` — run once per machine (again after moving the vault; `--uninstall` undoes it); appends to `~/.claude/CLAUDE.md` a short block that imports the global file, installs the vault hooks globally and links the vault skills, so sessions opened in any project can read, validate and commit vault notes.
 - Projects outside the vault are linked to their vault note through the note's `repo` list (`owner/name` of each git remote).

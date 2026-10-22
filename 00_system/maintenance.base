@@ -41,10 +41,10 @@ views:
       - file.folder
       - updated
   - type: table
-    name: Written or edited by Claude
+    name: Written or edited by AI
     filters:
       or:
-        - author == "claude"
+        - author == "ai"
         - author == "mixed"
     groupBy:
       property: author

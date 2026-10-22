@@ -31,4 +31,5 @@ aliases: [Home]
 
 - [[vault_conventions]] — Rules for folders, names, links, dates, YAML and sizes. Read before restructuring.
 - [[maintenance.base]] — Inbox, drafts, outdated notes and authorship at a glance.
+- `00_system/claude_log_YYYY_MM.md` — What the AI did in the vault each month (session log, one line per task).
 - `00_system/briefs/` — Archived morning briefs, one file per month, if the Telegram brief archive is on.

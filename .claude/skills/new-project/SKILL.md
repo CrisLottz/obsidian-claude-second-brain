@@ -20,7 +20,7 @@ Project name: `$ARGUMENTS` (ask for it if empty).
    - File name: `snake_case`, unique.
    - YAML: `author: ai`, `repo` (list of `owner/name`; this is how sessions opened in those repos find the note), `summary`, `up` = the hub, first alias = display name.
    - Fill **Goal**, **Current state** and the first **Next steps** from the user's answers.
-4. Add it to the hub's **Active** section (or **Paused** if `idea`/`paused`) with a one-line description.
+4. Add it to the hub with a one-line description: under **Active** if `active` or `planned`, under **Paused / dormant** if `idea` or `paused`.
 5. If the status is `active`, also add or update its line in the **Active** section of `00_home.md`.
 6. If the repo is local and has no `CLAUDE.md` or docs folder, mention it; don't create files outside the vault without asking.
 7. Append one line to the session log.

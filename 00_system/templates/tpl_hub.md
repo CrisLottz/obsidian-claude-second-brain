@@ -14,11 +14,9 @@ aliases: []
 
 # {{title}}
 
-> One line: what this area covers.
+> One line: what this area covers. List each note as `- [[note_name]] — what is inside and when to open it.`
 
 ## Active
-
-- [[note_name]] — what is inside and when to open it.
 
 ## Paused / dormant
 

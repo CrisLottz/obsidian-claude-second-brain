@@ -20,7 +20,7 @@ Every human or AI that writes to this vault follows these rules. If a rule here 
 
 | Folder | Holds | Main hub |
 |---|---|---|
-| `/` (root) | `CLAUDE.md`, `00_home.md`, `README.md` | — |
+| `/` (root) | `00_home.md`, `CLAUDE.md` (AI rules), `AGENTS.md` (pointer for other AI agents), `README.md`, `LICENSE` | — |
 | `00_system/` | These conventions, `templates/`, AI session logs, `briefs/` (archived morning briefs), Web Clipper template, maintenance view | — |
 | `01_inbox/` | Raw, unprocessed captures (see §7) | — |
 | `02_work/` | Jobs, employers, clients, freelance work, career | `hub_work` |
@@ -43,6 +43,7 @@ Every human or AI that writes to this vault follows these rules. If a rule here 
 - Fixed patterns:
   - Hubs: `hub_<area>.md`.
   - Monthly series: `<series>_YYYY_MM.md` — `diary_2026_10`, `money_2026_10`, `claude_log_2026_10`, `brief_2026_10`.
+  - AI session log: `00_system/claude_log_YYYY_MM.md`, `type: log`, `up: "[[00_home]]"` (created from `tpl_log` the first time the AI logs in a month).
 - `title` holds the human-readable name, as it is (with accents, capitals, proper names).
 - **The first item of `aliases` is the display name** — the name the morning brief shows. Write it in the language you want to read; for proper names it is the same name. Other aliases follow it.
 - Open tasks (`- [ ]`) are also shown in the brief: write them in the language you want to read.
@@ -59,7 +60,7 @@ Every human or AI that writes to this vault follows these rules. If a rule here 
 
 - Stored in ISO format everywhere: `2026-10-22` in YAML, `2026_10` in file names.
 - Free text inside a note (e.g. the diary) may use any date format.
-- **Deadlines:** write them as a standalone `YYYY-MM-DD` inside an open task (`- [ ] Pay rent 2026-11-05`) or in the `due` property. The morning brief lists those in the next 7 days and the overdue ones; dates inside file names are ignored.
+- **Deadlines:** write them as a standalone `YYYY-MM-DD` inside an open task (`- [ ] Pay rent 2026-11-05`) or in the `due` property. The morning brief lists those due in the next 7 days and the overdue ones (open tasks with a past date, unfinished notes with a past `due`); dates inside file names are ignored.
 
 ## 5. YAML frontmatter
 
@@ -94,9 +95,9 @@ Optional properties:
 | `rating` | review | 1–5 |
 | `relationship` | person | Free text: family, friend, partner, coworker, client… |
 
-YAML rules: a value containing `: ` or ` #` must be wrapped in double quotes. Property types (text, date, list…) are fixed for Obsidian in `.obsidian/types.json`; Web Clipper can import the same file. Templates for every type live in `00_system/templates/tpl_<type>.md`; inside their frontmatter, template variables are always quoted (`title: "{{title}}"`). Edit templates in Source mode.
+YAML rules: a value containing `: ` or ` #` must be wrapped in double quotes. Wikilinks in YAML are always quoted (`- "[[hub_name]]"`): unquoted, YAML reads `[[...]]` as a nested list. `up`, `tags` and `aliases` are always lists. Property types (text, date, list…) are fixed for Obsidian in `.obsidian/types.json`; Web Clipper can import the same file. Templates for every note type (all but `profile`, `inbox`, `template` and `system`) live in `00_system/templates/tpl_<type>.md`; inside their frontmatter, template variables are always quoted (`title: "{{title}}"`). Edit templates in Source mode.
 
-Validation: `.claude/hooks/validate_frontmatter.py` checks every note the AI edits against this file (allowed values are read from the tables below). Run `python .claude/hooks/validate_frontmatter.py --all` to audit the whole vault.
+Validation: `.claude/hooks/validate_frontmatter.py` checks every note the AI edits in Claude Code against this file (allowed values are read from the tables below). Run `python .claude/hooks/validate_frontmatter.py --all` to audit the whole vault.
 
 ### `up` — where the note hangs in the graph
 
@@ -140,14 +141,14 @@ Validation: `.claude/hooks/validate_frontmatter.py` checks every note the AI edi
 |---|---|---|
 | `idea` | Not started, just a thought | project, idea |
 | `planned` | Committed, not started / want to read-watch | project, course, assignment, review, hub |
-| `active` | In progress / currently reading-watching / in use | project, course, review, hub, list, log, routine, system |
+| `active` | In progress / currently reading-watching / in use | project, course, review, hub, list, log, routine, person, journal, finance, incident, system |
 | `paused` | On hold by choice | project, course, hub, routine |
 | `blocked` | Waiting on something external | project, assignment |
-| `done` | Finished | project, course, assignment, review, incident |
+| `done` | Finished | project, course, assignment, review, incident, meeting |
 | `cancelled` | Abandoned or dropped | project, assignment, review |
 | `archived` | Kept for history, no longer relevant | any |
-| `draft` | Content incomplete | note, reference, howto, resource, recipe, profile |
-| `evergreen` | Mature, trusted content | note, reference, howto, recipe |
+| `draft` | Content incomplete | note, reference, howto, resource, recipe, decision, profile |
+| `evergreen` | Mature, trusted content | note, reference, howto, recipe, decision |
 | `outdated` | Known to be stale; needs review | note, reference, howto |
 | `unprocessed` | Not yet triaged | inbox |
 
@@ -173,11 +174,11 @@ Loaded in every AI session (through the global instructions). It stays short (~1
 
 - **Hub** — an index of several notes or sub-hubs.
 - **Living note** — a single document kept up to date (`todo`, `wishlist`, `profile`). Usually `type: list`, `note` or `profile`.
-- **Monthly series** — one note per month (`diary_YYYY_MM`, `money_YYYY_MM`). The sub-hub lists the months, newest first.
+- **Monthly series** — one note per month (`diary_YYYY_MM`, `money_YYYY_MM`). The sub-hub lists the months under **Months**, newest first.
 
 ### Hub layout
 
-- Sections: **Views** (optional, `.base` files), **Active**, **Paused / dormant**, **Sub-hubs**. Same Active/Paused logic as the root.
+- Sections: **Views** (optional, `.base` files), **Active**, **Months** (only in monthly-series sub-hubs), **Paused / dormant**, **Sub-hubs**. Same Active/Paused logic as the root.
 
 ### New sub-hubs (bottom-up)
 
