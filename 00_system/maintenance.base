@@ -1,0 +1,66 @@
+filters:
+  and:
+    - not:
+        - file.inFolder("00_system/templates")
+    - file.ext == "md"
+properties:
+  file.name:
+    displayName: Note
+  file.folder:
+    displayName: Folder
+  note.type:
+    displayName: Type
+  note.status:
+    displayName: Status
+  note.author:
+    displayName: Author
+  note.updated:
+    displayName: Updated
+views:
+  - type: table
+    name: Inbox
+    filters:
+      and:
+        - file.inFolder("01_inbox")
+    order:
+      - file.name
+      - type
+      - file.mtime
+  - type: table
+    name: Drafts and outdated
+    filters:
+      or:
+        - status == "draft"
+        - status == "outdated"
+    groupBy:
+      property: status
+      direction: ASC
+    order:
+      - file.name
+      - type
+      - file.folder
+      - updated
+  - type: table
+    name: Written or edited by Claude
+    filters:
+      or:
+        - author == "claude"
+        - author == "mixed"
+    groupBy:
+      property: author
+      direction: ASC
+    order:
+      - file.name
+      - type
+      - file.folder
+      - updated
+  - type: table
+    name: All notes by type
+    groupBy:
+      property: type
+      direction: ASC
+    order:
+      - file.name
+      - status
+      - author
+      - file.folder

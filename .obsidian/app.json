@@ -1,0 +1,11 @@
+{
+  "useMarkdownLinks": false,
+  "newLinkFormat": "shortest",
+  "alwaysUpdateLinks": true,
+  "attachmentFolderPath": "99_assets",
+  "newFileLocation": "folder",
+  "newFileFolderPath": "01_inbox",
+  "userIgnoreFilters": [
+    "00_system/templates/"
+  ]
+}

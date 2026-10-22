@@ -1,0 +1,24 @@
+filters:
+  and:
+    - not:
+        - file.inFolder("00_system/templates")
+    - 'type == "person"'
+properties:
+  file.name:
+    displayName: Person
+  note.relationship:
+    displayName: Relationship
+  note.summary:
+    displayName: Summary
+  note.updated:
+    displayName: Updated
+views:
+  - type: table
+    name: By relationship
+    groupBy:
+      property: note.relationship
+      direction: ASC
+    order:
+      - file.name
+      - note.summary
+      - note.updated
