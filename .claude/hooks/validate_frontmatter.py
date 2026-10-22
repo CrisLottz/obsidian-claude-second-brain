@@ -21,6 +21,7 @@ SKIP_FILES = {"CLAUDE.md", "README.md", "AGENTS.md", "GEMINI.md"}
 INBOX = "01_inbox/"
 REQUIRED = ["title", "type", "status", "author", "created", "updated", "summary", "up"]
 SCALAR = ["title", "type", "status", "author", "created", "updated", "summary", "due", "period"]
+LISTS = ["aliases", "tags"]
 AUTHORS = {"human", "ai", "mixed"}
 NAME_RE = re.compile(r"^[a-z0-9][a-z0-9_]*\.md$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -35,7 +36,15 @@ def allowed_values(heading):
     section = re.search(rf"^### `{heading}`.*?$(.*?)(?=^#)", text, re.S | re.M)
     if not section:
         return set()
-    return set(re.findall(r"^\| `([a-z_]+)` \|", section.group(1), re.M))
+    return set(re.findall(r"^\| `([a-z0-9_-]+)` \|", section.group(1), re.M))
+
+
+def read_note(path):
+    """Note text (a UTF-8 BOM is dropped), or None when the file is not UTF-8."""
+    try:
+        return Path(path).read_text(encoding="utf-8-sig")
+    except UnicodeDecodeError:
+        return None
 
 
 def unquote(value):
@@ -62,14 +71,19 @@ def parse_frontmatter(text):
             if stripped.startswith("-") and key is not None:
                 if not isinstance(data[key], list):
                     data[key] = []
-                data[key].append(unquote(stripped[1:].strip()))
+                item = stripped[1:].strip()
+                if item.startswith("[["):  # YAML reads an unquoted [[link]] as a nested list
+                    errors.append(f'`{key}` item {item} must be quoted: - "{item}"')
+                data[key].append(unquote(item))
             continue
         match = KEY_RE.match(raw)
         if not match:
             errors.append(f"invalid YAML line: {raw!r}")
             continue
         key, value = match.group(1), (match.group(2) or "").strip()
-        if value and value[0] not in "\"'[" and (": " in value or " #" in value):
+        if value.startswith("[["):
+            errors.append(f'`{key}` value {value} must be quoted: "{value}"')
+        elif value and value[0] not in "\"'[" and (": " in value or " #" in value):
             errors.append(f"`{key}` contains ': ' or ' #' — wrap the value in double quotes")
         if value.startswith("[") and value.endswith("]"):
             data[key] = [unquote(v.strip()) for v in value[1:-1].split(",") if v.strip()]
@@ -109,7 +123,10 @@ def check(path, types=None, statuses=None, names=None):
     errors = []
     if not in_inbox and not NAME_RE.match(Path(rel).name):
         errors.append("file name must be lowercase snake_case: a-z, 0-9 and _")
-    data, err = parse_frontmatter(Path(path).read_text(encoding="utf-8"))
+    text = read_note(path)
+    if text is None:
+        return errors + ["file is not valid UTF-8 — re-save it with UTF-8 encoding"]
+    data, err = parse_frontmatter(text)
     if data is None:
         return [] if in_inbox else errors + [err]
     if err:
@@ -118,6 +135,9 @@ def check(path, types=None, statuses=None, names=None):
         if isinstance(data.get(key), list):
             errors.append(f"`{key}` must be a single value, not a list")
             data[key] = ""
+    for key in LISTS:
+        if data.get(key) not in (None, "") and not isinstance(data[key], list):
+            errors.append(f'`{key}` must be a list, one item per line: - "value"')
 
     if not in_inbox:
         for key in REQUIRED:

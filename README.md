@@ -48,7 +48,7 @@ What most people do: open an AI in their Obsidian folder and let it read and wri
 | **Context** | The AI greps random notes or you paste context every time | A root map and hubs with one-line descriptions; each note has a `summary`. The AI knows where everything is in ~1–2k tokens |
 | **Structure** | Folders invented on the fly | 7 areas, hubs, `up` links from every note to its hub, sub-hubs that appear only when a topic grows (~10 notes) |
 | **Metadata** | Free-form, inconsistent | A YAML schema with closed lists of `type` and `status`, **enforced by a validator hook** on every AI edit |
-| **Safety** | AI edits overwrite notes silently | Every AI edit is **auto-committed and pushed** after each response, with the session log as message. Review or revert anything |
+| **Safety** | AI edits overwrite notes silently | Every AI note edit is **auto-committed and pushed** after each response, with the session log as message (changes to `.claude/`, `.github/` and `.obsidian/` are left for you to review). Review or revert anything |
 | **Authorship** | Unknown who wrote what | `author: human \| ai \| mixed` in every note, plus a `claude:` prefix and co-author trailer on AI commits |
 | **Memory between sessions** | Gone | A monthly session log; each session starts with the latest entries and the inbox count |
 | **Outside the vault** | Only works inside the vault folder | A **global install**: in any code project Claude knows you, finds the project's note by its git remote, and keeps it updated |
@@ -170,7 +170,7 @@ Every morning a Telegram message with: deadlines in the next 7 days, overdue tas
 1. **Create the bot.** In Telegram, open **@BotFather** → `/newbot` → give it a name and a username ending in `bot`. Copy the **token**.
 2. **Say hi to your bot.** Open `t.me/<your_bot_username>` and press **Start**. Check the `@username` at the top of the chat: several bots can share the same display name.
 3. **Save the token as a secret.** In your vault repo on GitHub: *Settings → Secrets and variables → Actions → New repository secret* → name `TELEGRAM_BOT_TOKEN`. Never paste it into a note or a chat; if it leaks, `/revoke` it in BotFather.
-4. **Find your chat id.** *Actions → Morning brief → Run workflow*. The first run looks up your chat and prints `Chat id found: …` in its log (and sends you the first brief). Save that number as a second secret, `TELEGRAM_CHAT_ID`.
+4. **Find your chat id.** *Actions → Morning brief → Run workflow*. Without `TELEGRAM_CHAT_ID` the run lists the private chats that wrote to the bot (id and name) in its log and stops without sending anything. Save **your** id as a second secret, `TELEGRAM_CHAT_ID`, and run it again.
 5. **Configure it** in *Settings → Secrets and variables → Actions → Variables*:
 
 | Variable | Example | What it does |
@@ -288,7 +288,7 @@ Lo que hace la mayoría: abrir una IA en su carpeta de Obsidian y dejar que lea 
 | **Contexto** | La IA busca notas al azar o tú pegas contexto cada vez | Un mapa raíz y hubs con descripciones de una línea; cada nota tiene `summary`. La IA sabe dónde está todo con ~1–2 mil tokens |
 | **Estructura** | Carpetas inventadas sobre la marcha | 7 áreas, hubs, enlaces `up` de cada nota a su hub, sub-hubs que aparecen solo cuando un tema crece (~10 notas) |
 | **Metadatos** | Libres e inconsistentes | Un esquema YAML con listas cerradas de `type` y `status`, **vigiladas por un hook validador** en cada edición de la IA |
-| **Seguridad** | La IA sobrescribe notas sin avisar | Cada edición de la IA se **guarda en un commit y se sube** al terminar cada respuesta, con la bitácora como mensaje. Revisa o deshaz lo que sea |
+| **Seguridad** | La IA sobrescribe notas sin avisar | Cada edición de notas de la IA se **guarda en un commit y se sube** al terminar cada respuesta, con la bitácora como mensaje (los cambios en `.claude/`, `.github/` y `.obsidian/` quedan para que tú los revises). Revisa o deshaz lo que sea |
 | **Autoría** | No se sabe quién escribió qué | `author: human \| ai \| mixed` en cada nota, más el prefijo `claude:` y la línea de coautor en los commits de la IA |
 | **Memoria entre sesiones** | Se pierde | Una bitácora mensual; cada sesión empieza mostrando las últimas entradas y cuántas notas hay en el inbox |
 | **Fuera del vault** | Solo funciona dentro de la carpeta del vault | Una **instalación global**: en cualquier proyecto de código Claude te conoce, encuentra la nota del proyecto por su repo de git y la mantiene al día |
@@ -410,7 +410,7 @@ Cada mañana un mensaje de Telegram con: plazos de los próximos 7 días, tareas
 1. **Crea el bot.** En Telegram abre **@BotFather** → `/newbot` → ponle un nombre y un usuario que termine en `bot`. Copia el **token**.
 2. **Salúdalo.** Abre `t.me/<usuario_de_tu_bot>` y pulsa **Start**. Revisa el `@usuario` arriba del chat: varios bots pueden tener el mismo nombre visible.
 3. **Guarda el token como secreto.** En el repo de tu vault en GitHub: *Settings → Secrets and variables → Actions → New repository secret* → nombre `TELEGRAM_BOT_TOKEN`. Nunca lo pegues en una nota ni en un chat; si se filtra, revócalo con `/revoke` en BotFather.
-4. **Encuentra tu chat id.** *Actions → Morning brief → Run workflow*. La primera ejecución busca tu chat e imprime `Chat id found: …` en su log (y te manda el primer resumen). Guarda ese número como segundo secreto, `TELEGRAM_CHAT_ID`.
+4. **Encuentra tu chat id.** *Actions → Morning brief → Run workflow*. Sin `TELEGRAM_CHAT_ID`, la ejecución lista en su log los chats privados que le escribieron al bot (id y nombre) y se detiene sin enviar nada. Guarda **tu** id como segundo secreto, `TELEGRAM_CHAT_ID`, y vuelve a ejecutarlo.
 5. **Configúralo** en *Settings → Secrets and variables → Actions → Variables*:
 
 | Variable | Ejemplo | Qué hace |

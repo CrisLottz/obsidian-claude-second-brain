@@ -10,16 +10,18 @@ Usage:
 
 Environment (GitHub repository variables in the workflow):
   BRIEF_LANG       en (default) | es
-  BRIEF_TIMEZONE   IANA name such as America/Mexico_City (default UTC)
-  BRIEF_UTC_OFFSET fallback when the IANA database is missing (e.g. Windows): hours, like -6
-If TELEGRAM_CHAT_ID is missing, the chat id is looked up from the bot's recent messages
-(send /start to the bot first) and printed so it can be saved as a secret.
+  BRIEF_TIMEZONE   IANA name such as Europe/Madrid (default UTC)
+  BRIEF_UTC_OFFSET fallback when the IANA database is missing (e.g. Windows): hours, like -5
+If TELEGRAM_CHAT_ID is missing, the script lists the private chats that wrote to the bot in the
+last 24 hours (send /start to the bot first) and stops: save your id as the secret. It never sends
+the brief to a chat it discovered on its own.
 """
 import html
 import json
 import os
 import re
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date, datetime, timedelta, timezone
@@ -31,8 +33,8 @@ import validate_frontmatter as vf  # noqa: E402
 
 WINDOW_DAYS = 7
 SKIP_DIRS = {".git", ".obsidian", ".claude", ".github", ".trash"}
-TASK_RE = re.compile(r"^\s*- \[ \]\s+(.+?)\s*$")
-ISO_RE = re.compile(r"(?<![\w./-])(\d{4})-(\d{2})-(\d{2})(?![\w/-])")  # standalone dates, not parts of file names
+TASK_RE = re.compile(r"^\s*- \[ \]\s+(.+)$")
+ISO_RE = re.compile(r"(?<![\w./-])(\d{4})-(\d{2})-(\d{2})(?![\w/-]|\.\w)")  # standalone dates, not parts of file names
 LINK_RE = re.compile(r"\[\[([^\]|]+)(?:\|([^\]]+))?\]\]")
 
 TEXT = {
@@ -58,11 +60,15 @@ T = TEXT.get(os.environ.get("BRIEF_LANG", "en").lower(), TEXT["en"])
 
 def local_timezone():
     name = os.environ.get("BRIEF_TIMEZONE", "UTC")
+    if name.upper() == "UTC":
+        return timezone.utc
     try:
         from zoneinfo import ZoneInfo
         return ZoneInfo(name)
     except Exception:  # no IANA database (Windows without tzdata) or a typo
         hours = float(os.environ.get("BRIEF_UTC_OFFSET", "0"))
+        print(f"WARNING: time zone {name!r} not found (typo, or no IANA database here); using UTC{hours:+g}. "
+              "Check BRIEF_TIMEZONE or set BRIEF_UTC_OFFSET.", file=sys.stderr)
         return timezone(timedelta(hours=hours))
 
 
@@ -75,7 +81,7 @@ def notes():
         for name in filenames:
             if name.endswith(".md"):
                 path = Path(dirpath) / name
-                text = path.read_text(encoding="utf-8", errors="replace")
+                text = vf.read_note(path) or path.read_text(encoding="utf-8", errors="replace")
                 data, _ = vf.parse_frontmatter(text)
                 yield path, data or {}, text
 
@@ -120,7 +126,7 @@ def section(text, heading):
 
 
 def open_tasks(lines):
-    return [m.group(1) for m in map(TASK_RE.match, lines) if m and m.group(1).strip()]
+    return [m.group(1).strip() for m in map(TASK_RE.match, lines) if m and m.group(1).strip()]
 
 
 def block(heading, items):
@@ -144,6 +150,8 @@ def build(today):
             d = parse_iso(due.groups())
             if d and today <= d <= horizon:
                 upcoming.append((d, f"{name} ({T['due']})"))
+            elif d and d < today:
+                overdue.append((d, f"{name} ({T['due']})"))
         for task in open_tasks(text.splitlines()):
             for match in ISO_RE.findall(task):
                 d = parse_iso(match)
@@ -160,7 +168,7 @@ def build(today):
                                  if line.startswith("|") and line.rstrip().rstrip("|").strip().endswith("pending"))
 
     todo_path = ROOT / "07_personal" / "todo.md"
-    todo = open_tasks(section(todo_path.read_text(encoding="utf-8"), "Now")) if todo_path.exists() else []
+    todo = open_tasks(section(vf.read_note(todo_path) or "", "Now")) if todo_path.exists() else []
     inbox = len(list((ROOT / "01_inbox").glob("*.md")))
     names = vf.note_names()
     types, statuses = vf.allowed_values("type"), vf.allowed_values("status")
@@ -184,7 +192,8 @@ def build(today):
 def archive(brief, today):
     """Save the brief as plain Markdown under today's heading of the monthly series (replaced if re-run)."""
     path = ROOT / "00_system" / "briefs" / f"brief_{today:%Y_%m}.md"
-    body = html.unescape(re.sub(r"</?(?:b|code)>", "", brief)).split("\n", 1)[1].strip()
+    body = re.sub(r"<code>(.*?)</code>", r"`\1`", brief)
+    body = html.unescape(re.sub(r"</?b>", "", body)).split("\n", 1)[1].strip()
     body = re.sub(r"^• ", "- ", body, flags=re.M)
     entry = f"## {today:%Y-%m-%d} ({T['weekdays'][today.weekday()].lower()})\n\n{body}\n"
     month = f"{today:%Y-%m}"
@@ -215,24 +224,62 @@ def archive(brief, today):
     return path
 
 
+def pieces(text, size):
+    """Paragraphs no longer than `size`; a longer one is split into lines, and a longer line into
+    plain-text slices (never inside an HTML tag or entity)."""
+    for para in text.split("\n\n"):
+        if len(para) <= size:
+            yield para
+            continue
+        for line in para.split("\n"):
+            if len(line) <= size:
+                yield line
+                continue
+            plain = html.unescape(re.sub(r"<[^>]+>", "", line))
+            step = size // 5  # escaping can make a character up to 5 times longer (& → &amp;)
+            yield from (html.escape(plain[i:i + step], quote=False) for i in range(0, len(plain), step))
+
+
 def chunks(text, size=4000):
     """Split at blank lines so a long brief goes out as several messages (Telegram's limit is 4096)."""
     parts, current = [], ""
-    for para in text.split("\n\n"):
-        candidate = f"{current}\n\n{para}" if current else para
-        if len(candidate) > size and current:
+    for piece in pieces(text, size):
+        candidate = f"{current}\n\n{piece}" if current else piece
+        if len(candidate) > size:
             parts.append(current)
-            current = para[:size]
+            current = piece
         else:
-            current = candidate[:size]
-    return parts + [current]
+            current = candidate
+    return parts + [current] if current else parts
 
 
 def telegram(method, token, **params):
+    """Call the Bot API; errors come back as {"ok": false, "description": ...} (never with the token)."""
     url = f"https://api.telegram.org/bot{token}/{method}"
     data = urllib.parse.urlencode(params).encode()
-    with urllib.request.urlopen(urllib.request.Request(url, data=data), timeout=30) as response:
-        return json.loads(response.read().decode())
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, data=data), timeout=30) as response:
+            return json.loads(response.read().decode())
+    except urllib.error.HTTPError as error:  # 401 Unauthorized, 400 chat not found… explained in the body
+        try:
+            return json.loads(error.read().decode())
+        except ValueError:
+            return {"ok": False, "description": f"HTTP {error.code}"}
+    except urllib.error.URLError as error:
+        return {"ok": False, "description": f"network error: {error.reason}"}
+
+
+def private_chats(token):
+    """{chat id: who} for the private chats that wrote to the bot recently, or an error description."""
+    updates = telegram("getUpdates", token)
+    if not updates.get("ok"):
+        return updates.get("description", "getUpdates failed")
+    chats = {}
+    for update in updates.get("result", []):
+        chat = (update.get("message") or {}).get("chat") or {}
+        if chat.get("type") == "private":
+            chats[chat["id"]] = f"@{chat['username']}" if chat.get("username") else chat.get("first_name", "")
+    return chats
 
 
 def main():
@@ -248,16 +295,24 @@ def main():
     if not token:
         sys.exit("TELEGRAM_BOT_TOKEN is not set: add it as a repository secret (see README)")
     if not chat_id:
-        chats = {u["message"]["chat"]["id"] for u in telegram("getUpdates", token).get("result", []) if "message" in u}
+        chats = private_chats(token)
+        if isinstance(chats, str):
+            print(f"Telegram error: {chats}")
+            return 1
         if not chats:
-            sys.exit("TELEGRAM_CHAT_ID is not set and the bot has no recent messages: send /start to your bot and retry")
-        chat_id = str(sorted(chats)[0])
-        print(f"Chat id found: {chat_id} — save it as the TELEGRAM_CHAT_ID secret")
+            print("TELEGRAM_CHAT_ID is not set and nobody wrote to the bot in the last 24 hours: "
+                  "send /start to your bot and run this again. Nothing was sent.")
+            return 1
+        print("TELEGRAM_CHAT_ID is not set. Private chats that wrote to the bot recently:")
+        for found, who in chats.items():
+            print(f"  {found}  {who}")
+        print("Save YOUR id as the TELEGRAM_CHAT_ID secret and run this again. Nothing was sent.")
+        return 1
     for part in chunks(brief):
         result = telegram("sendMessage", token, chat_id=chat_id, text=part, parse_mode="HTML",
                           disable_web_page_preview="true")
         if not result.get("ok"):
-            print(f"Telegram error: {result}")
+            print(f"Telegram error: {result.get('description', result)}")
             return 1
     print("Sent")
     return 0
