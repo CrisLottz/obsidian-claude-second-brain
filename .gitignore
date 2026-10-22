@@ -1,0 +1,64 @@
+# ── Obsidian: per-device UI state (rewritten on every click) ──
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+
+# Obsidian local trash (Git history already keeps deleted notes)
+.trash/
+
+# ── Claude Code ──
+# Keep .claude/ (shared settings, skills, commands); ignore only per-machine overrides
+.claude/settings.local.json
+# Per-machine hook state (files Claude touched since the last commit)
+.claude/state/
+# Python bytecode cache created when the hooks run
+__pycache__/
+*.pyc
+# Third-party Claude wrappers that dump caches into the vault
+**/.claudian/
+
+# ── Large / binary files: keep them outside the vault and link to them ──
+*.pdf
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.mp3
+*.wav
+*.zip
+*.7z
+*.rar
+*.tar
+*.gz
+*.iso
+*.exe
+*.msi
+*.dmg
+*.sql
+*.bak
+*.psd
+
+# ── Secrets (defense in depth: never store these in notes) ──
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+id_rsa*
+id_ed25519*
+
+# ── Temp / editor files ──
+*.tmp
+*.swp
+*~
+.aider*
+node_modules/
+
+# ── OS junk (Windows / macOS / Linux) ──
+.DS_Store
+._*
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+.directory
+.Trash-*

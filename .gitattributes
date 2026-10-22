@@ -1,0 +1,12 @@
+# Normalize line endings to LF on every OS (Windows writes CRLF otherwise)
+* text=auto eol=lf
+
+# Binary files: never convert or diff as text
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.pdf binary
