@@ -20,8 +20,8 @@ Every human or AI that writes to this vault follows these rules. If a rule here 
 
 | Folder | Holds | Main hub |
 |---|---|---|
-| `/` (root) | `00_home.md`, `CLAUDE.md` (AI rules), `AGENTS.md` (pointer for other AI agents), `README.md`, `LICENSE` | — |
-| `00_system/` | These conventions, `templates/`, AI session logs, `briefs/` (archived morning briefs), Web Clipper template, maintenance view | — |
+| `/` (root) | `00_home.md`, `CLAUDE.md` (Claude Code rules), `AGENTS.md` (the same rules for every other AI agent), `GEMINI.md` and `QWEN.md` (3-line pointers to `AGENTS.md`), `README.md`, `LICENSE` | — |
+| `00_system/` | These conventions, `connecting_ai_agents`, `templates/`, AI session logs, `briefs/` (archived morning briefs), Web Clipper template, maintenance view | — |
 | `01_inbox/` | Raw, unprocessed captures (see §7) | — |
 | `02_work/` | Jobs, employers, clients, freelance work, career | `hub_work` |
 | `03_projects/` | Projects you build for yourself | `hub_projects` |

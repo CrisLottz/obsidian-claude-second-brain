@@ -37,8 +37,8 @@ Everything is plain Markdown in a Git repository: your notes are yours, they syn
 
 ## Works with any AI, built for Claude
 
-- **Claude Code** gets the full experience: hooks that sync, validate and commit, six slash-command skills, and a global setup so Claude knows you in *any* project folder.
-- **Other AI agents with file access** (Codex, Cursor, Aider, Gemini CLI, a local model through an agent) can use the vault too: the notes, hubs and rules are plain Markdown and YAML, and `AGENTS.md` tells them where to start. They don't run the hooks, so they validate notes with one command and your Obsidian Git plugin commits the changes.
+- **Claude Code** gets the full experience: hooks that sync, validate and commit, seven slash-command skills, and a global setup so Claude knows you in *any* project folder.
+- **Other AI agents with file access** (Codex, Cursor, Aider, Gemini CLI, a local model through an agent) can use the vault too: the notes, hubs and rules are plain Markdown and YAML, and `AGENTS.md` tells them where to start (plus `GEMINI.md` and `QWEN.md` pointers for tools that look for their own file name). They don't run the hooks, so they validate notes with one command and your Obsidian Git plugin commits the changes. Per-tool setup and how to add another agent: [`00_system/connecting_ai_agents.md`](00_system/connecting_ai_agents.md).
 - **Chat apps** (ChatGPT, Gemini, Claude.ai) can't open a folder on your computer: attach `00_home.md` and the notes you need to the conversation.
 - **The Telegram brief uses no AI at all**: a plain Python script reads your notes on GitHub Actions.
 
@@ -390,8 +390,8 @@ Todo es Markdown en un repositorio Git: tus notas son tuyas, se sincronizan entr
 
 ## Funciona con cualquier IA, pensado para Claude
 
-- **Claude Code** tiene la experiencia completa: hooks que sincronizan, validan y hacen commit, seis skills como comandos, y una configuración global para que Claude te conozca en *cualquier* carpeta de proyecto.
-- **Otros agentes de IA con acceso a archivos** (Codex, Cursor, Aider, Gemini CLI, un modelo local a través de un agente) también pueden usar el vault: las notas, los hubs y las reglas son Markdown y YAML, y `AGENTS.md` les dice por dónde empezar. No ejecutan los hooks, así que validan las notas con un comando y tu plugin Obsidian Git hace los commits.
+- **Claude Code** tiene la experiencia completa: hooks que sincronizan, validan y hacen commit, siete skills como comandos, y una configuración global para que Claude te conozca en *cualquier* carpeta de proyecto.
+- **Otros agentes de IA con acceso a archivos** (Codex, Cursor, Aider, Gemini CLI, un modelo local a través de un agente) también pueden usar el vault: las notas, los hubs y las reglas son Markdown y YAML, y `AGENTS.md` les dice por dónde empezar (más los punteros `GEMINI.md` y `QWEN.md` para las herramientas que buscan su propio nombre de archivo). No ejecutan los hooks, así que validan las notas con un comando y tu plugin Obsidian Git hace los commits. La configuración por herramienta y cómo añadir otro agente: [`00_system/connecting_ai_agents.md`](00_system/connecting_ai_agents.md).
 - **Las apps de chat** (ChatGPT, Gemini, Claude.ai) no pueden abrir una carpeta de tu computadora: adjunta a la conversación `00_home.md` y las notas que necesites.
 - **El resumen de Telegram no usa IA**: un script de Python lee tus notas en GitHub Actions.
 

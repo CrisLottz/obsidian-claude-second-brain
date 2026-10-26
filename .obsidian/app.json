@@ -6,6 +6,12 @@
   "newFileLocation": "folder",
   "newFileFolderPath": "01_inbox",
   "userIgnoreFilters": [
-    "00_system/templates/"
+    "00_system/templates/",
+    "00_system/claude_log",
+    "00_system/briefs/",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "QWEN.md"
   ]
 }
