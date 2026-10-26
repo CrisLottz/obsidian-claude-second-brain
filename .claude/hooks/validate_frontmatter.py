@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CONVENTIONS = ROOT / "00_system" / "vault_conventions.md"
-SKIP_DIRS = {".git", ".obsidian", ".claude", ".trash"}
+SKIP_DIRS = {".git", ".obsidian", ".claude", ".trash", "marketplace"}
 SKIP_PREFIXES = ("00_system/templates/",)
 SKIP_FILES = {"CLAUDE.md", "README.md", "AGENTS.md", "GEMINI.md", "QWEN.md", "CHANGELOG.md"}  # agent instruction files, not notes
 INBOX = "01_inbox/"
