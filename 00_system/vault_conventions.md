@@ -60,7 +60,8 @@ Every human or AI that writes to this vault follows these rules. If a rule here 
 
 - Stored in ISO format everywhere: `2026-10-22` in YAML, `2026_10` in file names.
 - Free text inside a note (e.g. the diary) may use any date format.
-- **Deadlines:** write them as a standalone `YYYY-MM-DD` inside an open task (`- [ ] Pay rent 2026-11-05`) or in the `due` property. The morning brief lists those due in the next 7 days and the overdue ones (open tasks with a past date, unfinished notes with a past `due`); dates inside file names are ignored.
+- **Deadlines:** mark them with `📅 YYYY-MM-DD` at the end of an open task (`- [ ] Pay rent 📅 2026-11-05`) or use the `due` property. Only those count as deadlines: any other date in a task is context (`CV sent 2026-10-23`). The morning brief lists the ones due in the next 7 days and the overdue ones (open tasks with a past `📅`, unfinished notes with a past `due`); don't repeat the date in the task text.
+- **One task, one note.** A task lives only in the note it belongs to (the project, plan or person note); never copy it into the to-do list or into a second note with other words. The to-do list holds only tasks with no other home. The brief shows each task once, but it can't tell that two different wordings are the same task.
 
 ## 5. YAML frontmatter
 
@@ -156,9 +157,13 @@ Only these values are valid. To add one, add it here first.
 
 ### `author`
 
-- `human` — written by you.
-- `ai` — created by an AI.
-- `mixed` — written by you and later edited by an AI. The AI switches `human` → `mixed` when it edits a note.
+| Value | Who |
+|---|---|
+| `human` | Written by you |
+| `ai` | Created by an AI |
+| `mixed` | Written by you and later edited by an AI — the AI switches `human` → `mixed` when it edits a note |
+
+Only these values are valid (the validator reads this table). If you work with several AI agents and want to tell them apart, add a row per agent (`gemini`, `codex`…) before it writes notes.
 
 ## 6. Hubs, notes and the root note
 

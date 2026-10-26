@@ -276,7 +276,7 @@ Preview it on your computer, without sending anything: `py .github/scripts/morni
 
 ### How your notes feed it
 
-- **Deadlines:** write the date as a standalone `YYYY-MM-DD` inside an open task — `- [ ] Pay rent 2026-11-05` — or in a note's `due` property. The next 7 days go under the upcoming list; past dates of open tasks and unfinished notes go under *Overdue*. Dates inside file names are ignored.
+- **Deadlines:** mark them with `📅 YYYY-MM-DD` at the end of an open task — `- [ ] Pay rent 📅 2026-11-05` — or in a note's `due` property. The next 7 days go under the upcoming list; past dates of open tasks and unfinished notes go under *Overdue*. Any other date in a task is just context and is ignored. Each task is shown once, so keep it in one note only (*one task, one note*).
 - **To do now:** the open tasks under `## Now` in `07_personal/todo.md`.
 - **Next steps:** the first open task under `## Next steps` of each project with `status: active`.
 - **Names:** the brief shows each note's **first alias** — write it in the language you want to read (see [Customize it](#customize-it)).
@@ -627,7 +627,7 @@ Previsualízalo en tu computadora, sin enviar nada: `py .github/scripts/morning_
 
 ### Cómo lo alimentan tus notas
 
-- **Plazos:** escribe la fecha suelta en formato `AAAA-MM-DD` dentro de una tarea abierta — `- [ ] Pagar el alquiler 2026-11-05` — o en la propiedad `due` de una nota. Los próximos 7 días van a la lista de próximos; las fechas pasadas de tareas abiertas y de notas sin terminar van a *Vencidos*. Las fechas dentro de nombres de archivo se ignoran.
+- **Plazos:** márcalos con `📅 AAAA-MM-DD` al final de una tarea abierta — `- [ ] Pagar el alquiler 📅 2026-11-05` — o en la propiedad `due` de una nota. Los próximos 7 días van a la lista de próximos; las fechas pasadas de tareas abiertas y de notas sin terminar van a *Vencidos*. Cualquier otra fecha en una tarea es solo contexto y se ignora. Cada tarea se muestra una sola vez, así que déjala en una sola nota (*una tarea, una nota*).
 - **Pendientes ahora:** las tareas abiertas bajo `## Now` en `07_personal/todo.md`.
 - **Siguientes pasos:** la primera tarea abierta bajo `## Next steps` de cada proyecto con `status: active`.
 - **Nombres:** el resumen muestra el **primer alias** de cada nota — escríbelo en el idioma que quieras leer (ver [Personalízalo](#personalízalo)).
