@@ -22,7 +22,7 @@ INBOX = "01_inbox/"
 REQUIRED = ["title", "type", "status", "author", "created", "updated", "summary", "up"]
 SCALAR = ["title", "type", "status", "author", "created", "updated", "summary", "due", "period"]
 LISTS = ["aliases", "tags"]
-AUTHORS = {"human", "ai", "mixed"}
+AUTHORS = {"human", "ai", "mixed"}  # fallback when the `author` table in vault_conventions.md is not found
 NAME_RE = re.compile(r"^[a-z0-9][a-z0-9_]*\.md$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 PERIOD_RE = re.compile(r"^\d{4}-\d{2}$")
@@ -149,8 +149,10 @@ def check(path, types=None, statuses=None, names=None):
         errors.append(f"type `{data['type']}` is not allowed; valid: {', '.join(sorted(types))}")
     if data.get("status") and data["status"] not in statuses:
         errors.append(f"status `{data['status']}` is not allowed; valid: {', '.join(sorted(statuses))}")
-    if data.get("author") and data["author"] not in AUTHORS:
-        errors.append(f"author `{data['author']}` must be one of: {', '.join(sorted(AUTHORS))}")
+    if data.get("author"):
+        authors = allowed_values("author") or AUTHORS  # one row per agent in vault_conventions.md
+        if data["author"] not in authors:
+            errors.append(f"author `{data['author']}` must be one of: {', '.join(sorted(authors))}")
     for key in ("created", "updated", "due"):
         if data.get(key) and not DATE_RE.match(str(data[key])):
             errors.append(f"`{key}` must be YYYY-MM-DD, got `{data[key]}`")

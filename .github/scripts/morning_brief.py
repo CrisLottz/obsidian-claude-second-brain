@@ -1,7 +1,9 @@
 """Morning brief built from the vault and sent to Telegram. No LLM, no API tokens, stdlib only.
 
-It reads structured data only: YAML frontmatter, open `- [ ]` tasks and standalone ISO dates
-(YYYY-MM-DD). See README → "Telegram morning brief".
+It reads structured data only: YAML frontmatter (`due`) and open `- [ ]` tasks with their deadline
+(`📅 YYYY-MM-DD`; any other date in a task is context). Each task is shown once, in its most urgent
+section: overdue → next 7 days → "Now" in the to-do list → project next step.
+See README → "Telegram morning brief".
 
 Usage:
   python .github/scripts/morning_brief.py              send (needs TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID)
@@ -35,6 +37,7 @@ WINDOW_DAYS = 7
 SKIP_DIRS = {".git", ".obsidian", ".claude", ".github", ".trash"}
 TASK_RE = re.compile(r"^\s*- \[ \]\s+(.+)$")
 ISO_RE = re.compile(r"(?<![\w./-])(\d{4})-(\d{2})-(\d{2})(?![\w/-]|\.\w)")  # standalone dates, not parts of file names
+DUE_RE = re.compile(r"\s*📅\s*(\d{4})-(\d{2})-(\d{2})")  # a task's deadline; any other date in it is just context
 LINK_RE = re.compile(r"\[\[([^\]|]+)(?:\|([^\]]+))?\]\]")
 
 TEXT = {
@@ -87,9 +90,15 @@ def notes():
 
 
 def clean(text):
-    """Plain text for a notification line: wikilinks as their names, no bold markers. Never cut."""
-    text = LINK_RE.sub(lambda m: m.group(2) or m.group(1), text)
-    return text.replace("*", "").strip()
+    """Plain text for a notification line: wikilinks as their names, no bold markers, no deadline marker
+    (the date is already the line's prefix). Never cut."""
+    text = LINK_RE.sub(lambda m: m.group(2) or m.group(1), DUE_RE.sub("", text))
+    return re.sub(r"\s+([.,;])", r"\1", text.replace("*", "")).strip()
+
+
+def key(task):
+    """Identity of a task across sections: same words, ignoring case, punctuation and the deadline marker."""
+    return " ".join(re.findall(r"\w+", DUE_RE.sub("", LINK_RE.sub(lambda m: m.group(1), task)).lower()))
 
 
 def esc(text):
@@ -138,7 +147,7 @@ def block(heading, items):
 
 
 def build(today):
-    upcoming, overdue, projects, pending_money = [], [], [], 0
+    dated, project_steps, pending_money = [], [], 0  # dated: (date, label, task — None for a `due` note)
     horizon = today + timedelta(days=WINDOW_DAYS)
     for path, data, text in notes():
         rel = path.relative_to(ROOT).as_posix()
@@ -148,21 +157,15 @@ def build(today):
         due = ISO_RE.search(str(data.get("due") or ""))
         if due and data.get("status") not in ("done", "cancelled", "archived"):
             d = parse_iso(due.groups())
-            if d and today <= d <= horizon:
-                upcoming.append((d, f"{name} ({T['due']})"))
-            elif d and d < today:
-                overdue.append((d, f"{name} ({T['due']})"))
+            if d:
+                dated.append((d, f"{name} ({T['due']})", None))
         for task in open_tasks(text.splitlines()):
-            for match in ISO_RE.findall(task):
-                d = parse_iso(match)
-                if d and today <= d <= horizon:
-                    upcoming.append((d, f"{clean(task)} — {name}"))
-                elif d and d < today:
-                    overdue.append((d, f"{clean(task)} — {name}"))
+            match = DUE_RE.search(task)
+            d = parse_iso(match.groups()) if match else None
+            if d:
+                dated.append((d, f"{clean(task)} — {name}", task))
         if data.get("type") == "project" and data.get("status") == "active":
-            steps = open_tasks(section(text, "Next steps"))
-            projects.append(f"<b>{esc(name)}</b>: {esc(clean(steps[0]))}" if steps
-                            else f"<b>{esc(name)}</b>: {T['no_step']}")
+            project_steps.append((name, open_tasks(section(text, "Next steps"))))
         if data.get("type") == "finance" and str(data.get("period")) == today.strftime("%Y-%m"):
             pending_money += sum(1 for line in text.splitlines()
                                  if line.startswith("|") and line.rstrip().rstrip("|").strip().endswith("pending"))
@@ -174,15 +177,50 @@ def build(today):
     types, statuses = vf.allowed_values("type"), vf.allowed_values("status")
     broken = sum(1 for p, _, _ in notes() if vf.should_check(p) and vf.check(p, types, statuses, names))
 
+    # Sections in order of urgency; a task already shown is left out of every section below it.
+    shown = set()
+
+    def first_time(task):
+        if task is None:
+            return True
+        k = key(task)
+        if k in shown:
+            return False
+        shown.add(k)
+        return True
+
+    def take(items, limit):
+        """The first `limit` items whose task isn't shown yet. Marking stops at the limit, so a task
+        cut by it can still appear in a later section instead of vanishing."""
+        picked = []
+        for item in items:
+            if len(picked) == limit:
+                break
+            if first_time(item[-1]):
+                picked.append(item)
+        return picked
+
+    dated.sort(key=lambda x: (x[0], x[1]))
+    overdue = [(d, label) for d, label, _ in take([x for x in dated if x[0] < today], 5)]
+    upcoming = [(d, label) for d, label, _ in take([x for x in dated if today <= x[0] <= horizon], 8)]
+    now = [clean(t) for t, in take([(t,) for t in todo], 8)]
+    projects = []
+    for name, steps in sorted(project_steps):
+        step = next((s for s in steps if key(s) not in shown), None)
+        if step:
+            shown.add(key(step))
+            projects.append(f"<b>{esc(name)}</b>: {esc(clean(step))}")
+        elif not steps:
+            projects.append(f"<b>{esc(name)}</b>: {T['no_step']}")
+
     out = [f"☀️ <b>{T['weekdays'][today.weekday()]} {today.isoformat()}</b>"]
     if upcoming:
-        out += block(f"📅 <b>{T['upcoming'].format(n=WINDOW_DAYS)}</b>",
-                     [f"{d:%m-%d} — {esc(t)}" for d, t in sorted(set(upcoming))[:8]])
+        out += block(f"📅 <b>{T['upcoming'].format(n=WINDOW_DAYS)}</b>", [f"{d:%m-%d} — {esc(t)}" for d, t in upcoming])
     if overdue:
-        out += block(f"⏰ <b>{T['overdue']}</b>", [f"{d:%m-%d} — {esc(t)}" for d, t in sorted(set(overdue))[:5]])
-    out += block(f"✅ <b>{T['now']}</b>", [esc(clean(t)) for t in todo[:8]] or [T["now_empty"]])
+        out += block(f"⏰ <b>{T['overdue']}</b>", [f"{d:%m-%d} — {esc(t)}" for d, t in overdue])
+    out += block(f"✅ <b>{T['now']}</b>", [esc(t) for t in now] or [T["now_empty"]])
     if projects:
-        out += block(f"🚀 <b>{T['projects']}</b>", sorted(projects)[:8])
+        out += block(f"🚀 <b>{T['projects']}</b>", projects)  # every active project, none hidden
     if pending_money:
         out += ["", f"💰 {T['money'].format(n=pending_money)}"]
     out += ["", f"📥 {T['footer'].format(inbox=inbox, broken=broken)}"]

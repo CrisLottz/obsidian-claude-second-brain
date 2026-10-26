@@ -14,7 +14,7 @@ aliases: [To-do]
 
 # To-do
 
-> Open tasks with a standalone date (`- [ ] Pay rent 2026-11-05`) show up in the morning brief.
+> Open tasks with a deadline (`- [ ] Pay rent 📅 2026-11-05`) show up in the morning brief. A task lives in the note it belongs to; this list is only for tasks with no other home.
 
 ## Now
 

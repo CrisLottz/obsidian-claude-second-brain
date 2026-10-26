@@ -23,6 +23,7 @@ The root note `00_home.md` (the user's profile and the map of every area) and th
 
 - Every note you create follows the conventions: full YAML, `author: ai`, `up` set, and a one-line description of it in its hub(s). Start from `00_system/templates/tpl_<type>.md`.
 - Editing a note the user wrote: keep their words and voice, add rather than rewrite, set `author: mixed` and update `updated`.
+- **One task, one note:** a `- [ ]` task lives only in the note it belongs to — never copy it into `07_personal/todo.md` or another note with other words. Deadlines are `📅 YYYY-MM-DD` at the end of the task; any other date is context (`vault_conventions` §4).
 - Never delete a note the user wrote without asking. Prefer `status: archived`.
 - Move, rename and delete with `git mv` / `git rm`. After a rename, fix every `[[old_name]]` in the vault (including `up`).
 - Durable facts about the user (preferences, people, goals, decisions) go into the vault: `07_personal/profile.md` (full profile; keep the root Profile as its short summary), the relevant hub, or `07_personal/people/people_and_context.md`. Do not keep them only in your internal memory.
