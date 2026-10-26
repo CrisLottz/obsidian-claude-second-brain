@@ -189,10 +189,21 @@ def build(today):
         shown.add(k)
         return True
 
+    def take(items, limit):
+        """The first `limit` items whose task isn't shown yet. Marking stops at the limit, so a task
+        cut by it can still appear in a later section instead of vanishing."""
+        picked = []
+        for item in items:
+            if len(picked) == limit:
+                break
+            if first_time(item[-1]):
+                picked.append(item)
+        return picked
+
     dated.sort(key=lambda x: (x[0], x[1]))
-    overdue = [(d, label) for d, label, task in dated if d < today and first_time(task)][:5]
-    upcoming = [(d, label) for d, label, task in dated if today <= d <= horizon and first_time(task)][:8]
-    now = [clean(t) for t in todo if first_time(t)][:8]
+    overdue = [(d, label) for d, label, _ in take([x for x in dated if x[0] < today], 5)]
+    upcoming = [(d, label) for d, label, _ in take([x for x in dated if today <= x[0] <= horizon], 8)]
+    now = [clean(t) for t, in take([(t,) for t in todo], 8)]
     projects = []
     for name, steps in sorted(project_steps):
         step = next((s for s in steps if key(s) not in shown), None)
