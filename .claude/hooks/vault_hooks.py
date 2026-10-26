@@ -11,6 +11,10 @@
                  session log line as message, then push. Files under .claude/,
                  .github/ and .obsidian/ are never auto-committed: the user is asked
                  to review and commit them.
+  prompt         optional (off by default): from the hour in VAULT_DAY_CLOSE_HOUR, until
+                 today's `/day-close` is in the session log, ask Claude to remind the
+                 user once (at most every 90 minutes, across all sessions) so tomorrow's
+                 morning brief starts up to date
 
 With --global (hooks installed in ~/.claude/settings.json) the same commands run
 in sessions opened in any other folder: session-start reports which vault
@@ -23,7 +27,7 @@ import re
 import subprocess
 import sys
 import time
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -303,7 +307,48 @@ def stop():
     return 0
 
 
-COMMANDS = {"session-start": session_start, "post-edit": post_edit, "stop": stop}
+DAY_CLOSE_EVERY = 90 * 60  # seconds between reminders while the review is still pending
+LAST_REMINDER = STATE / "day_close_reminded.txt"
+
+
+def day_close_hour():
+    """Hour (0-23) from which the reminder starts, from VAULT_DAY_CLOSE_HOUR; None when unset or invalid (off)."""
+    try:
+        hour = int(os.environ.get("VAULT_DAY_CLOSE_HOUR", ""))
+    except ValueError:
+        return None
+    return hour if 0 <= hour <= 23 else None
+
+
+def day_close_done(today):
+    """True when today's session log already has the `/day-close` line."""
+    log = latest_log()
+    if not log:
+        return False
+    marker = f"- {today.isoformat()} — Day close"
+    return any(l.startswith(marker) for l in log.read_text(encoding="utf-8", errors="replace").splitlines())
+
+
+def prompt():
+    hour, now = day_close_hour(), datetime.now()
+    if hour is None or now.hour < hour or day_close_done(now.date()):
+        return 0
+    try:
+        if time.time() - float(LAST_REMINDER.read_text(encoding="utf-8")) < DAY_CLOSE_EVERY:
+            return 0
+    except (OSError, ValueError):
+        pass  # never reminded, or an unreadable file: remind now
+    STATE.mkdir(parents=True, exist_ok=True)
+    LAST_REMINDER.write_text(str(time.time()), encoding="utf-8")
+    context = (f"It is {now:%H:%M} and today's end-of-day review has not run yet. First answer the user's message "
+               "as usual; then, in one short line at the end, in the language the user writes in, remind them and "
+               "offer to run /day-close (it checks which open tasks are done so tomorrow's morning brief is up to "
+               "date). Don't repeat it in later replies of this conversation unless they ask.")
+    print(json.dumps({"hookSpecificOutput": {"hookEventName": "UserPromptSubmit", "additionalContext": context}}))
+    return 0
+
+
+COMMANDS = {"session-start": session_start, "post-edit": post_edit, "stop": stop, "prompt": prompt}
 
 if __name__ == "__main__":
     for stream in (sys.stdout, sys.stderr):

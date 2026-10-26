@@ -47,6 +47,7 @@ Hooks handle Git: pull at session start, and after each of your responses a comm
 - `/ingest <url>` — turn an article or YouTube video into a `resource` note.
 - `/new-project <name>` — create a project note wired to its hub and repo.
 - `/weekly-review` — review the week, priorities and vault health.
+- `/day-close` — end-of-day check of open tasks against evidence so the morning brief is up to date. Optional: set `VAULT_DAY_CLOSE_HOUR` and a hook reminds the user from that hour until it runs.
 - `/journal-close [YYYY-MM]` — distill a month of diary into `people_and_context` and the profile.
 - `/interview` — interview the user to build or refresh their profile.
 

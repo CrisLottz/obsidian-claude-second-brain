@@ -223,6 +223,7 @@ claude
 ### 7. Optional extras
 
 - **Telegram morning brief** — [setup below](#telegram-morning-brief).
+- **End-of-day review (`/day-close`)** — run it in the evening so tomorrow's brief only lists what is really pending. To get a nudge, set the environment variable `VAULT_DAY_CLOSE_HOUR` (for example `20`) in `~/.claude/settings.json` under `"env"`: from that hour, until the review is in the log, Claude reminds you once every 90 minutes. A Telegram version also exists: set the repository variable `DAY_CLOSE_ENABLED` = `true` (same bot secrets, `BRIEF_LANG` and `BRIEF_TIMEZONE` as the brief); GitHub may start it late, so it skips runs that begin before 18:00.
 - **YouTube for `/ingest`** — `py -m pip install --user youtube-transcript-api` on Windows, `python3 -m pip install --user youtube-transcript-api` on macOS/Linux. If Linux answers `externally-managed-environment`, add `--break-system-packages` (with `--user` it only installs for your account).
 - **Obsidian Web Clipper** (browser extension), in its settings:
   1. **General → Vaults**: add your vault's name (`second-brain`).
@@ -295,6 +296,7 @@ Preview it on your computer, without sending anything: `py .github/scripts/morni
 | `/ingest <url>` | Turns an article or YouTube video into a `resource` note with key points and links |
 | `/new-project <name>` | Creates a project note wired to its hub, the root note and its GitHub repos |
 | `/weekly-review` | Done, blocked, deadlines, money, vault health and proposed priorities |
+| `/day-close` | Checks each open task against evidence (log, commits, GitHub), closes what is done and previews tomorrow's brief |
 | `/journal-close [YYYY-MM]` | Distills a month of diary into your profile, people and context |
 | `/interview` | Builds or refreshes your profile and how the AI should work with you |
 
@@ -574,6 +576,7 @@ claude
 ### 7. Extras opcionales
 
 - **Resumen matutino en Telegram** — [configuración abajo](#resumen-matutino-en-telegram).
+- **Revisión de fin de día (`/day-close`)** — ejecútala por la tarde para que el brief de mañana solo liste lo que de verdad queda pendiente. Para recibir un aviso, define la variable de entorno `VAULT_DAY_CLOSE_HOUR` (por ejemplo `20`) en `~/.claude/settings.json`, bajo `"env"`: desde esa hora, hasta que la revisión esté en el log, Claude te lo recuerda una vez cada 90 minutos. También hay versión por Telegram: define la variable del repositorio `DAY_CLOSE_ENABLED` = `true` (mismos secretos del bot, `BRIEF_LANG` y `BRIEF_TIMEZONE` que el brief); GitHub puede iniciarla tarde, así que omite las ejecuciones que empiezan antes de las 18:00.
 - **YouTube para `/ingest`** — `py -m pip install --user youtube-transcript-api` en Windows, `python3 -m pip install --user youtube-transcript-api` en macOS/Linux. Si Linux responde `externally-managed-environment`, agrega `--break-system-packages` (con `--user` solo se instala para tu cuenta).
 - **Obsidian Web Clipper** (extensión del navegador), en sus ajustes:
   1. **General → Vaults**: agrega el nombre de tu vault (`second-brain`).
@@ -646,6 +649,7 @@ Previsualízalo en tu computadora, sin enviar nada: `py .github/scripts/morning_
 | `/ingest <url>` | Convierte un artículo o video de YouTube en una nota `resource` con puntos clave y enlaces |
 | `/new-project <nombre>` | Crea una nota de proyecto conectada a su hub, a la nota raíz y a sus repos de GitHub |
 | `/weekly-review` | Hecho, bloqueado, plazos, dinero, salud del vault y prioridades propuestas |
+| `/day-close` | Revisa cada tarea abierta contra evidencia (log, commits, GitHub), cierra lo hecho y muestra cómo quedará el brief de mañana |
 | `/journal-close [AAAA-MM]` | Resume un mes de diario en tu perfil, tus personas y tu contexto |
 | `/interview` | Crea o actualiza tu perfil y cómo quieres que trabaje la IA contigo |
 

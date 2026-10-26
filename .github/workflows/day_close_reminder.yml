@@ -1,0 +1,36 @@
+# End-of-day Telegram reminder to run /day-close, skipped when today's review is already in the session log.
+# Plain Python, no LLM, no API tokens. Read-only: it sends a message and commits nothing. Optional.
+# Configure it with repository variables (the secrets are the same as the morning brief's):
+#   DAY_CLOSE_ENABLED  true to turn the daily schedule on (manual runs always work) — off by default
+#   BRIEF_LANG / BRIEF_TIMEZONE   same variables as the morning brief (language, and the zone for "today")
+# GitHub often starts scheduled runs late; the script skips a run that starts before 18:00 local time.
+# For an exact time, fire this workflow from an external cron service (workflow_dispatch API call).
+name: Day close reminder
+
+on:
+  schedule:
+    - cron: "7 20 * * *"   # 20:07 every day in the time zone below; set it to your IANA zone (BRIEF_TIMEZONE)
+      timezone: "UTC"
+  workflow_dispatch:         # manual run from the Actions tab or: gh workflow run day_close_reminder.yml
+
+permissions:
+  contents: read
+
+jobs:
+  remind:
+    if: github.event_name == 'workflow_dispatch' || vars.DAY_CLOSE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BRIEF_LANG: ${{ vars.BRIEF_LANG || 'en' }}
+      BRIEF_TIMEZONE: ${{ vars.BRIEF_TIMEZONE || 'UTC' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Send the reminder unless today's day close is done
+        run: python3 .github/scripts/day_close_reminder.py ${{ github.event_name == 'schedule' && '--evening-only' || '' }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

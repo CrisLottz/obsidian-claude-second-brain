@@ -36,6 +36,7 @@ HOOKS = [  # event, matcher, hook command, timeout in seconds
     ("SessionStart", "startup|resume|clear|compact", "session-start", 45),
     ("PostToolUse", "Edit|MultiEdit|Write", "post-edit", 30),
     ("Stop", None, "stop", 90),
+    ("UserPromptSubmit", None, "prompt", 10),
 ]
 
 
