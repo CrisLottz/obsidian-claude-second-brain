@@ -2,6 +2,16 @@
 
 All notable changes to this template. Dates are ISO (YYYY-MM-DD). Versions follow [Semantic Versioning](https://semver.org/): a change that makes existing notes or settings behave differently bumps the minor or major number and is listed under **Upgrading**.
 
+## [Unreleased]
+
+### Added
+
+- Claude Code plugin marketplace: `/plugin marketplace add CrisLottz/obsidian-claude-second-brain`, then `/plugin install second-brain-setup --marketplace CrisLottz/obsidian-claude-second-brain`. The same `skills/second-brain-setup/SKILL.md` is what directories and the `marketplace/build_zip.py` zip ship.
+
+### Changed
+
+- The skill moved from `marketplace/second-brain-setup/` to `skills/second-brain-setup/`, the standard place directories look for it. `marketplace/` keeps only the zip builder.
+
 ## [1.1.0] — 2026-10-26
 
 ### Upgrading from 1.0.0

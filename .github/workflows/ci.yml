@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false
 
       - name: Scripts compile
-        run: python3 -m py_compile .github/scripts/*.py .claude/hooks/*.py .claude/global/install.py marketplace/*.py marketplace/second-brain-setup/scripts/*.py
+        run: python3 -m py_compile .github/scripts/*.py .claude/hooks/*.py .claude/global/install.py marketplace/*.py skills/second-brain-setup/scripts/*.py
 
       - name: Notes pass the frontmatter validator
         run: python3 .claude/hooks/validate_frontmatter.py --all

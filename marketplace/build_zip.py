@@ -15,7 +15,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-SKILL = HERE / "second-brain-setup"
+SKILL = ROOT / "skills" / "second-brain-setup"
 SKIP = {"__pycache__"}
 
 
