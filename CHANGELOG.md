@@ -2,16 +2,6 @@
 
 All notable changes to this template. Dates are ISO (YYYY-MM-DD). Versions follow [Semantic Versioning](https://semver.org/): a change that makes existing notes or settings behave differently bumps the minor or major number and is listed under **Upgrading**.
 
-## [Unreleased]
-
-### Added
-
-- Claude Code plugin marketplace: `/plugin marketplace add CrisLottz/obsidian-claude-second-brain`, then `/plugin install second-brain-setup --marketplace CrisLottz/obsidian-claude-second-brain`. The same `skills/second-brain-setup/SKILL.md` is what directories and the `marketplace/build_zip.py` zip ship.
-
-### Changed
-
-- The skill moved from `marketplace/second-brain-setup/` to `skills/second-brain-setup/`, the standard place directories look for it. `marketplace/` keeps only the zip builder.
-
 ## [1.1.0] — 2026-10-26
 
 ### Upgrading from 1.0.0
@@ -26,7 +16,8 @@ All notable changes to this template. Dates are ISO (YYYY-MM-DD). Versions follo
 - Optional reminders for it: a Claude Code hook (`VAULT_DAY_CLOSE_HOUR`) and a Telegram message (`DAY_CLOSE_ENABLED`, same bot, `BRIEF_LANG` and `BRIEF_TIMEZONE` as the brief).
 - `AGENTS.md` with the non-negotiable rules and a table that translates Claude-only features for other agents; `GEMINI.md` and `QWEN.md` pointers; `00_system/connecting_ai_agents.md`.
 - "One task, one note" rule.
-- `marketplace/second-brain-setup/`: the template packaged as a single `SKILL.md` skill for agent marketplaces (guide, references and a read-only prerequisites check), with `marketplace/build_zip.py` to build the zip. It holds no hooks or installer: it points to this repository.
+- `skills/second-brain-setup/`: the template packaged as a single `SKILL.md` skill for agent marketplaces (guide, references and a read-only prerequisites check), with `marketplace/build_zip.py` to build the zip. It holds no hooks or installer: it points to this repository.
+- Claude Code plugin marketplace: `/plugin marketplace add CrisLottz/obsidian-claude-second-brain`, then `/plugin install second-brain-setup --marketplace CrisLottz/obsidian-claude-second-brain`.
 - CI: scripts compile, notes pass the validator; on the upstream repo, a privacy scan for secrets and personal data (`.github/scripts/privacy_scan.py`, which you can also run by hand).
 
 ### Changed
