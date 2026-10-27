@@ -12,6 +12,8 @@
     "AGENTS.md",
     "CLAUDE.md",
     "GEMINI.md",
-    "QWEN.md"
+    "QWEN.md",
+    "CHANGELOG.md",
+    "marketplace/"
   ]
 }
