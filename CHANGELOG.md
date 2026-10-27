@@ -16,6 +16,7 @@ All notable changes to this template. Dates are ISO (YYYY-MM-DD). Versions follo
 - Optional reminders for it: a Claude Code hook (`VAULT_DAY_CLOSE_HOUR`) and a Telegram message (`DAY_CLOSE_ENABLED`, same bot, `BRIEF_LANG` and `BRIEF_TIMEZONE` as the brief).
 - `AGENTS.md` with the non-negotiable rules and a table that translates Claude-only features for other agents; `GEMINI.md` and `QWEN.md` pointers; `00_system/connecting_ai_agents.md`.
 - "One task, one note" rule.
+- `marketplace/second-brain-setup/`: the template packaged as a single `SKILL.md` skill for agent marketplaces (guide, references and a read-only prerequisites check), with `marketplace/build_zip.py` to build the zip. It holds no hooks or installer: it points to this repository.
 - CI: scripts compile, notes pass the validator; on the upstream repo, a privacy scan for secrets and personal data (`.github/scripts/privacy_scan.py`, which you can also run by hand).
 
 ### Changed

@@ -34,7 +34,7 @@ sys.path.insert(0, str(ROOT / ".claude" / "hooks"))
 import validate_frontmatter as vf  # noqa: E402
 
 WINDOW_DAYS = 7
-SKIP_DIRS = {".git", ".obsidian", ".claude", ".github", ".trash"}
+SKIP_DIRS = {".git", ".obsidian", ".claude", ".github", ".trash", "marketplace"}
 TASK_RE = re.compile(r"^\s*- \[ \]\s+(.+)$")
 ISO_RE = re.compile(r"(?<![\w./-])(\d{4})-(\d{2})-(\d{2})(?![\w/-]|\.\w)")  # standalone dates, not parts of file names
 DUE_RE = re.compile(r"\s*📅\s*(\d{4})-(\d{2})-(\d{2})")  # a task's deadline; any other date in it is just context
