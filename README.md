@@ -98,6 +98,8 @@ What most people do: open an AI in their Obsidian folder and let it read and wri
 
 ## Setup, step by step
 
+> **Prefer to let your AI do it?** Install the guided-setup skill and tell Claude "set up a second brain with Obsidian": `/plugin marketplace add CrisLottz/obsidian-claude-second-brain` then `/plugin install second-brain-setup --marketplace CrisLottz/obsidian-claude-second-brain` (it asks before every step and creates your own private copy of this template).
+
 Commands are given for **PowerShell** (Windows) and **bash/zsh** (macOS, Linux). `"$HOME/second-brain"` works in both.
 
 ### 0. Install the tools and sign in to GitHub
