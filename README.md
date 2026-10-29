@@ -69,6 +69,10 @@ Everything in these screenshots comes from a demo vault with fictional data.
 
 <p align="center"><img src=".github/images/vault-folders.png" alt="The vault's numbered folders in Obsidian's file explorer" width="260"></p>
 
+**What it can grow into.** This is the graph view of the author's own vault after months of use (nodes are unlabeled). Hubs link every area, so the AI can walk from the root to any note.
+
+<p align="center"><img src=".github/images/graph-view.png" alt="Obsidian graph view of a mature vault: clusters of notes joined by hubs" width="760"></p>
+
 ---
 
 ## Why it's different
@@ -452,6 +456,10 @@ Todas estas capturas salen de un vault de demostración con datos ficticios (en 
 <p align="center"><img src=".github/images/note-example.png" alt="Una nota de proyecto en Obsidian con sus propiedades y tareas" width="760"></p>
 
 <p align="center"><img src=".github/images/vault-folders.png" alt="Las carpetas numeradas del vault en el explorador de Obsidian" width="260"></p>
+
+**En qué puede convertirse.** Es la vista de grafo del vault del autor tras meses de uso (los nodos no tienen etiquetas). Los hubs conectan todas las áreas, así la IA puede ir de la nota raíz a cualquier nota.
+
+<p align="center"><img src=".github/images/graph-view.png" alt="Vista de grafo de Obsidian de un vault maduro: grupos de notas unidos por hubs" width="760"></p>
 
 ---
 
