@@ -10,6 +10,7 @@
 
 - [What is this?](#what-is-this)
 - [Works with any AI, built for Claude](#works-with-any-ai-built-for-claude)
+- [See it in action](#see-it-in-action)
 - [Why it's different](#why-its-different)
 - [What's inside](#whats-inside)
 - [Requirements](#requirements)
@@ -41,6 +42,34 @@ Everything is plain Markdown in a Git repository: your notes are yours, they syn
 - **Other AI agents with file access** (Codex, Cursor, Aider, Gemini CLI, a local model through an agent) can use the vault too: the notes, hubs and rules are plain Markdown and YAML, and `AGENTS.md` tells them where to start (plus `GEMINI.md` and `QWEN.md` pointers for tools that look for their own file name). They don't run the hooks, so they validate notes with one command and your Obsidian Git plugin commits the changes. Per-tool setup and how to add another agent: [`00_system/connecting_ai_agents.md`](00_system/connecting_ai_agents.md).
 - **Chat apps** (ChatGPT, Gemini, Claude.ai) can't open a folder on your computer: attach `00_home.md` and the notes you need to the conversation.
 - **The Telegram brief uses no AI at all**: a plain Python script reads your notes on GitHub Actions.
+
+## See it in action
+
+Everything in these screenshots comes from a demo vault with fictional data.
+
+**A morning brief on Telegram.** A plain Python script on GitHub Actions reads your notes and messages you: deadlines, overdue tasks, your to-do list and the next step of each active project. No AI, no tokens.
+
+<p align="center"><img src=".github/images/telegram-brief.png" alt="Telegram message with the next 7 days, overdue tasks, to-do list and active projects" width="420"></p>
+
+**Claude Code reads the vault, not just files.** It follows the root note, the hub and the project note, and answers with your real deadlines.
+
+<p align="center"><img src=".github/images/claude-session.png" alt="Claude Code answering what the next steps of a project are, from the vault notes" width="760"></p>
+
+**`/inbox` files your quick captures.** It proposes a plan (rename, properties, folder, hub) and waits for your OK.
+
+<p align="center"><img src=".github/images/inbox-skill.png" alt="The /inbox skill proposing where each inbox note goes" width="760"></p>
+
+**`/day-close` keeps tomorrow's brief honest.** It checks every open task against evidence and asks only about what it can't tell.
+
+<p align="center"><img src=".github/images/day-close.png" alt="The /day-close skill listing open tasks by due date" width="760"></p>
+
+**Plain notes in Obsidian.** Typed properties (`type`, `status`, `author`, `up`, `summary`), a one-line summary the AI reads first, and `📅` deadlines.
+
+<p align="center"><img src=".github/images/note-example.png" alt="A project note in Obsidian with its properties and tasks" width="760"></p>
+
+<p align="center"><img src=".github/images/vault-folders.png" alt="The vault's numbered folders in Obsidian's file explorer" width="260"></p>
+
+---
 
 ## Why it's different
 
@@ -367,6 +396,7 @@ Los nombres de menús y botones están en inglés, como en la interfaz por defec
 
 - [¿Qué es esto?](#qué-es-esto)
 - [Funciona con cualquier IA, pensado para Claude](#funciona-con-cualquier-ia-pensado-para-claude)
+- [Míralo en acción](#míralo-en-acción)
 - [En qué se diferencia](#en-qué-se-diferencia)
 - [Qué incluye](#qué-incluye)
 - [Requisitos](#requisitos)
@@ -396,6 +426,34 @@ Todo es Markdown en un repositorio Git: tus notas son tuyas, se sincronizan entr
 - **Otros agentes de IA con acceso a archivos** (Codex, Cursor, Aider, Gemini CLI, un modelo local a través de un agente) también pueden usar el vault: las notas, los hubs y las reglas son Markdown y YAML, y `AGENTS.md` les dice por dónde empezar (más los punteros `GEMINI.md` y `QWEN.md` para las herramientas que buscan su propio nombre de archivo). No ejecutan los hooks, así que validan las notas con un comando y tu plugin Obsidian Git hace los commits. La configuración por herramienta y cómo añadir otro agente: [`00_system/connecting_ai_agents.md`](00_system/connecting_ai_agents.md).
 - **Las apps de chat** (ChatGPT, Gemini, Claude.ai) no pueden abrir una carpeta de tu computadora: adjunta a la conversación `00_home.md` y las notas que necesites.
 - **El resumen de Telegram no usa IA**: un script de Python lee tus notas en GitHub Actions.
+
+## Míralo en acción
+
+Todas estas capturas salen de un vault de demostración con datos ficticios (en inglés).
+
+**Un resumen matutino en Telegram.** Un script de Python en GitHub Actions lee tus notas y te escribe: fechas límite, tareas vencidas, tu lista de pendientes y el siguiente paso de cada proyecto activo. Sin IA y sin tokens.
+
+<p align="center"><img src=".github/images/telegram-brief.png" alt="Mensaje de Telegram con los próximos 7 días, tareas vencidas, pendientes y proyectos activos" width="420"></p>
+
+**Claude Code lee el vault, no solo archivos.** Sigue la nota raíz, el hub y la nota del proyecto, y responde con tus fechas reales.
+
+<p align="center"><img src=".github/images/claude-session.png" alt="Claude Code respondiendo cuáles son los siguientes pasos de un proyecto a partir de las notas" width="760"></p>
+
+**`/inbox` ordena tus capturas rápidas.** Propone un plan (nombre, propiedades, carpeta, hub) y espera tu visto bueno.
+
+<p align="center"><img src=".github/images/inbox-skill.png" alt="La skill /inbox proponiendo dónde va cada nota del inbox" width="760"></p>
+
+**`/day-close` mantiene fiel el resumen de mañana.** Revisa cada tarea abierta contra evidencia y pregunta solo lo que no puede saber.
+
+<p align="center"><img src=".github/images/day-close.png" alt="La skill /day-close listando las tareas abiertas por fecha" width="760"></p>
+
+**Notas en Markdown simple dentro de Obsidian.** Propiedades tipadas (`type`, `status`, `author`, `up`, `summary`), un resumen de una línea que la IA lee primero y fechas límite con `📅`.
+
+<p align="center"><img src=".github/images/note-example.png" alt="Una nota de proyecto en Obsidian con sus propiedades y tareas" width="760"></p>
+
+<p align="center"><img src=".github/images/vault-folders.png" alt="Las carpetas numeradas del vault en el explorador de Obsidian" width="260"></p>
+
+---
 
 ## En qué se diferencia
 
