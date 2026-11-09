@@ -2,7 +2,7 @@
 
 **An AI-ready second brain for Obsidian.** Plain Markdown and Git, built for Claude Code, usable by any AI agent — with a morning brief on Telegram that costs zero tokens.
 
-[![second brain setup on Agensi](https://img.shields.io/badge/second%20brain%20setup-on%20Agensi-1f6feb?style=for-the-badge)](https://www.agensi.io/skills/second-brain-setup)
+[![second brain setup on Agensi](https://img.shields.io/badge/second%20brain%20setup-on%20Agensi-1f6feb?style=for-the-badge)](https://www.agensi.io/skills/obsidian-second-brain-setup)
 
 **English** · [Español](#español)
 
